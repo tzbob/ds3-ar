@@ -32,17 +32,12 @@ lazy val ds3ar = crossProject.in(file("."))
     ),
 
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "scalatags" % "0.5.5",
-      "com.lihaoyi" %%% "sourcecode" % "0.1.0",
       "org.typelevel" %%% "cats" % "0.5.0",
       "org.scalatest" %% "scalatest" % "3.0.0-M10" % "test"
     )
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "com.github.tototoshi" %% "scala-csv" % "1.3.1",
-      "com.github.melrief" %% "purecsv" % "0.0.6",
-      "org.scodec" %% "scodec-bits" % "1.1.0",
       "com.nrinaudo" %% "kantan.csv-generic" % "0.1.10"
     )
   )
