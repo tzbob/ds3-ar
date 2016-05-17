@@ -66,14 +66,23 @@ case class EquipParamWeapon(
       attackBaseThunder,
       attackBaseDark)
 
-  def weaponReinforcement(upgradeLevel: Int): Option[ReinforceParamWeapon] = {
+  def weaponReinforcement(upgradeLevel: Int): Error Xor ReinforceParamWeapon = {
     val reinforceParams = ParamReader.read[ReinforceParamWeapon]
 
+    def find(key: Int): Error Xor ReinforceParamWeapon =  {
+      reinforceParams.find(_.id == key) match {
+        case Some(p) => p.right
+        case None => Error.NotFound(id, "reinforce param weapon", key).left
+      }
+    }
+
     val searchKey = reinforceTypeId + upgradeLevel
-    reinforceParams.find(_.id == searchKey)
+
+    find(searchKey) orElse find(reinforceTypeId + upgradeLevel / 2) orElse find(reinforceTypeId)
+
   }
 
-  def reinforcedWeapon(upgradeLevel: Int): Option[WeaponReinforcement] = {
+  def reinforcedWeapon(upgradeLevel: Int): Error Xor WeaponReinforcement = {
     val weaponReinforceParams = weaponReinforcement(upgradeLevel)
 
     for {
@@ -97,23 +106,26 @@ case class EquipParamWeapon(
     }
   }
 
-  def reinforcedBase(upgradeLevel: Int): Option[WeaponDamageFields[Float]] =
+  def reinforcedBase(upgradeLevel: Int): Error Xor WeaponDamageFields[Float] =
     for {
       reinforcement <- reinforcedWeapon(upgradeLevel)
     } yield (baseDamage |@| reinforcement.damageModifiers) map (_ * _)
 
-  def reinforcedAR(levels: LevelFields[Int], upgradeLevel: Int): Option[WeaponDamageFields[Double]] =
+  def reinforcedAR(levels: LevelFields[Int], upgradeLevel: Int): Error Xor WeaponDamageFields[Double] =
     for {
       coef <- weaponDamageCoefficientSums(levels, upgradeLevel)
       base <- reinforcedBase(upgradeLevel)
     } yield (coef |@| base) map (_ * _)
 
-  val readAecp: Option[AttackElementCorrectParam] = {
+  val readAecp: Error Xor AttackElementCorrectParam = {
     val aecps = ParamReader.read[AttackElementCorrectParam]
-    aecps.find(_.id == this.aecpId)
+    aecps.find(_.id == this.aecpId) match {
+      case Some(a) => a.right
+      case None => Error.NotFound(id, "Attack Element Correct Param", aecpId).left
+    }
   }
 
-  val readAecpWeaponDamageFields: Option[WeaponDamageFields[LevelFields[Boolean]]] =
+  val readAecpWeaponDamageFields: Error Xor WeaponDamageFields[LevelFields[Boolean]] =
     for {
       aecp <- readAecp
     } yield {
@@ -154,10 +166,15 @@ case class EquipParamWeapon(
           aecp isSet 24))
     }
 
-  lazy val readStatFunctions: Option[DamageFields[CalcCorrectGraph]] = {
+  lazy val readStatFunctions: Error Xor DamageFields[CalcCorrectGraph] = {
     val ccgs = ParamReader.read[CalcCorrectGraph]
 
-    def find(sf: Int): Option[CalcCorrectGraph] = ccgs.find(_.id == sf)
+    def find(sf: Int): Error Xor CalcCorrectGraph = {
+      ccgs.find(_.id == sf) match {
+        case Some(c) => c.right
+        case None => Error.NotFound(id, "Calc Correct Graph", sf).left
+      }
+    }
 
     for {
       psf <- find(this.physicsStatFunc)
@@ -172,13 +189,16 @@ case class EquipParamWeapon(
     }
   }
 
-  def spEffectParam(upgradeLevel: Int): Option[(SpEffectParam, SpEffectParam, SpEffectParam)] = {
+  def spEffectParam(upgradeLevel: Int): Error Xor (SpEffectParam, SpEffectParam, SpEffectParam) = {
     val spEffectParams = ParamReader.read[SpEffectParam]
     val weaponReinforcementParams = weaponReinforcement(upgradeLevel)
 
-    def find(key: Int): Option[SpEffectParam] =
-      if (key == -1) Some(SpEffectParam(0, 0, 0, 0, 0, 0, 0))
-      else spEffectParams.find(_.id == key)
+    def find(key: Int): Error Xor SpEffectParam =
+      if (key == -1) SpEffectParam(0, 0, 0, 0, 0, 0, 0).right
+      else spEffectParams.find(_.id == key) match {
+        case Some(s) => s.right
+        case None => Error.NotFound(id, "SpEffectParam", key).left
+      }
 
     for {
       wrp <- weaponReinforcementParams
@@ -198,14 +218,16 @@ case class EquipParamWeapon(
     } yield (a, b, c)
   }
 
-  def effectCoefficientSums(levels: LevelFields[Int], upgradeLevel: Int): Option[EffectFields[Double]] = {
+  def effectCoefficientSums(levels: LevelFields[Int], upgradeLevel: Int): Error Xor EffectFields[Double] = {
     for {
       statFunctions <- readStatFunctions
       reinforcement <- reinforcedWeapon(upgradeLevel)
 
       // FIXME: Ignoring eoh3, speculation that eoh3 models effect on hit effects that affect the user
-      (eoh1, eoh2, _) <- spEffectParam(upgradeLevel)
+      sparams <- spEffectParam(upgradeLevel)
     } yield {
+      val (eoh1, eoh2, _) = sparams
+
       val bleedUseWpn = this.correctLuck * 0.01
       val poisonUseWpn = bleedUseWpn
 
@@ -228,7 +250,7 @@ case class EquipParamWeapon(
     }
   }
 
-  def weaponDamageCoefficientSums(levels: LevelFields[Int], upgradeLevel: Int): Option[WeaponDamageFields[Double]] = {
+  def weaponDamageCoefficientSums(levels: LevelFields[Int], upgradeLevel: Int): Error Xor WeaponDamageFields[Double] = {
     val statCoefficient = for {
       aecp <- readAecp
       weaponDamageAecpFields <- readAecpWeaponDamageFields
