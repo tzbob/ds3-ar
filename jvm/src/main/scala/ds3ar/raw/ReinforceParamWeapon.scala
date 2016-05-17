@@ -1,7 +1,10 @@
 package ds3ar.raw
 
+import kantan.csv.generic._ // case class decoder derivation
+
 object ReinforceParamWeapon {
   implicit val pr = ParamReader.reader[ReinforceParamWeapon]("/ReinforceParamWeaponOut.csv")
+  lazy val all = ParamReader.read[ReinforceParamWeapon]
 }
 
 case class ReinforceParamWeapon(

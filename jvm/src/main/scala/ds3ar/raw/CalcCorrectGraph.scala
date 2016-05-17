@@ -1,7 +1,10 @@
 package ds3ar.raw
 
+import kantan.csv.generic._ // case class decoder derivation
+
 object CalcCorrectGraph {
   implicit val pr = ParamReader.reader[CalcCorrectGraph]("/CalcCorrectGraphOut.csv")
+  lazy val all = ParamReader.read[CalcCorrectGraph]
 }
 
 case class CalcCorrectGraph(

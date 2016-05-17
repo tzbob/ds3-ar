@@ -7,6 +7,8 @@ import kantan.csv.generic._ // case class decoder derivation
 
 object EquipParamWeapon {
   implicit val pr = ParamReader.reader[EquipParamWeapon]("/EquipParamWeaponOut.csv")
+
+  lazy val equipParamWeapons = ParamReader.read[EquipParamWeapon]
 }
 
 case class EquipParamWeapon(
@@ -67,7 +69,7 @@ case class EquipParamWeapon(
       attackBaseDark)
 
   def weaponReinforcement(upgradeLevel: Int): Error Xor ReinforceParamWeapon = {
-    val reinforceParams = ParamReader.read[ReinforceParamWeapon]
+    val reinforceParams = ReinforceParamWeapon.all
 
     def find(key: Int): Error Xor ReinforceParamWeapon =  {
       reinforceParams.find(_.normalizedId == key) match {
@@ -117,7 +119,8 @@ case class EquipParamWeapon(
     } yield (coef |@| base) map (_ * _)
 
   val readAecp: Error Xor AttackElementCorrectParam = {
-    val aecps = ParamReader.read[AttackElementCorrectParam]
+    val aecps = AttackElementCorrectParam.all
+
     aecps.find(_.id == this.aecpId) match {
       case Some(a) => a.right
       case None => Error.NotFound(id, "Attack Element Correct Param", aecpId).left
@@ -166,7 +169,7 @@ case class EquipParamWeapon(
     }
 
   lazy val readStatFunctions: Error Xor DamageFields[CalcCorrectGraph] = {
-    val ccgs = ParamReader.read[CalcCorrectGraph]
+    val ccgs = CalcCorrectGraph.all
 
     def find(sf: Int): Error Xor CalcCorrectGraph = {
       ccgs.find(_.id == sf) match {
@@ -189,7 +192,7 @@ case class EquipParamWeapon(
   }
 
   def spEffectParam(upgradeLevel: Int): Error Xor (SpEffectParam, SpEffectParam, SpEffectParam) = {
-    val spEffectParams = ParamReader.read[SpEffectParam]
+    val spEffectParams = SpEffectParam.all
     val weaponReinforcementParams = weaponReinforcement(upgradeLevel)
 
     def find(key: Int): Error Xor SpEffectParam =

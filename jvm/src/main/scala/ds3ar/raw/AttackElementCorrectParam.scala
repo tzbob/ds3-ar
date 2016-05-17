@@ -6,10 +6,9 @@ import scala.util.Try
 
 object AttackElementCorrectParam {
   implicit val pr = ParamReader.reader[AttackElementCorrectParam]("/AttackElementCorrectParamOut.csv")
-
   val seqRowDecoder = implicitly[RowDecoder[Array[Double]]]
-  implicit val decoder = seqRowDecoder.mapResult { rawData =>
 
+  implicit val decoder = seqRowDecoder.mapResult { rawData =>
     val aecpTry = Try {
       val id = rawData(0).toInt
       val index = rawData(1).toInt
@@ -21,6 +20,8 @@ object AttackElementCorrectParam {
 
     Result.fromTry(aecpTry).leftMap(DecodeError.TypeError)
   }
+
+  lazy val all = ParamReader.read[AttackElementCorrectParam]
 }
 
 case class AttackElementCorrectParam(
