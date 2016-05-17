@@ -1,6 +1,8 @@
 package ds3ar.raw
 
-import kantan.csv.generic._ // case class decoder derivation
+import cats.data.Xor
+
+import kantan.csv.generic._
 import cats.syntax.all._
 
 import org.scalatest.FunSuite
@@ -9,33 +11,37 @@ import org.scalatest.Matchers._
 
 class EquipParamWeaponTest extends FunSuite {
 
-  test("hollow bandits knife") {
-    val epws = ParamReader.read[EquipParamWeapon]
-
-    val levels = LevelFields(40, 40, 10, 10, 10)
-    val upgradeLevel = 10
-
-    val hbk = epws.find(_.id == 1011500).get
-
-    val hbkBase = hbk.reinforcedBase(upgradeLevel).get
-    assert(hbkBase === WeaponDamageFields(133, 0, 0, 0, 0))
-
-    val hbkCoefs = hbk.weaponDamageCoefficientSums(levels, upgradeLevel).get
-    hbkCoefs.physical shouldBe 1.6855 +- 0.002
-    hbkCoefs.magic shouldBe 1
-    hbkCoefs.fire shouldBe 1
-    hbkCoefs.lightning shouldBe 1
-    hbkCoefs.dark shouldBe 1
-
-    val hbkAR = hbk.reinforcedAR(levels, upgradeLevel).get
-    hbkAR.physical shouldBe 224.1715 +- 0.002
-    hbkAR.magic shouldBe 0
-    hbkAR.fire shouldBe 0
-    hbkAR.lightning shouldBe 0
-    hbkAR.dark shouldBe 0
-
-    val hbkEffects = hbk.effectCoefficientSums(levels, upgradeLevel).get
-    hbkEffects.bleed shouldBe 34.27285714 +- 0.002
+  def equalUpTo[T: Numeric](x: WeaponDamageFields[T], y: WeaponDamageFields[T], precision: T) = {
+    x.physical shouldBe y.physical +- precision
+    x.magic shouldBe y.magic +- precision
+    x.fire shouldBe y.fire +- precision
+    x.lightning shouldBe y.lightning +- precision
+    x.dark shouldBe y.dark +- precision
   }
 
+  def testSheet(fileName: String, levels: LevelFields[Int], upgradeLevel: Int) = {
+    val wo = ParamReader.read[WeaponOverview](fileName)
+
+    val epws = ParamReader.read[EquipParamWeapon]
+    val epwsMap = epws.map(x => x.id -> x).toMap
+
+    wo.foreach { overview =>
+      val epw = epwsMap(overview.id)
+      val epwAR = epw.reinforcedAR(levels, upgradeLevel)
+
+      epwAR match {
+        case Xor.Right(ar) =>
+          equalUpTo(ar.map(_.toFloat), overview.ar, 0.0002f)
+
+        case Xor.Left(error) =>
+          println(error)
+      }
+    }
+  }
+
+  test("compare +10 40/40/10/10/10 with sheets information") {
+    val levels = LevelFields(40, 40, 10, 10, 10)
+    val upgradeLevel = 10
+    testSheet("/Ds3Ar-10-40-40-10-10-10.csv", levels, upgradeLevel)
+  }
 }
