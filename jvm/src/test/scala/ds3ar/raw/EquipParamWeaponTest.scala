@@ -44,4 +44,10 @@ class EquipParamWeaponTest extends FunSuite {
     val upgradeLevel = 10
     testSheet("/Ds3Ar-10-40-40-10-10-10.csv", levels, upgradeLevel)
   }
+
+  test("compare +5 5/30/80/90/65 with sheets information") {
+    val levels = LevelFields(5, 30, 80, 90, 65)
+    val upgradeLevel = 5
+    testSheet("/Ds3Ar-5-5-30-80-90-65.csv", levels, upgradeLevel)
+  }
 }

@@ -29,7 +29,8 @@ case class CalcCorrectGraph(
   initInclinationSoul: Float,
   adjustmentValue: Float,
   boundryInclinationSoul: Float,
-  boundryValue: Float) {
+  boundryValue: Float
+) {
 
   def apply(stat: Float): Double = {
     require(stat > 0 && stat <= 99)
@@ -48,8 +49,8 @@ case class CalcCorrectGraph(
     xB: Float,
     yA: Float,
     yB: Float,
-    p: Float): Double = {
-
+    p: Float
+  ): Double = {
     val dx = (stat - xA) / (xB - xA)
 
     val fdx =

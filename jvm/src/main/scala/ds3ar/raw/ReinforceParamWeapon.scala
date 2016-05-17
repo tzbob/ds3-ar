@@ -42,4 +42,6 @@ case class ReinforceParamWeapon(
   unknown1: Float,
   unknown2: Float,
   unknown3: Float
-)
+) {
+  val normalizedId: Int = id / 100 * 100 + materialSetId2
+}

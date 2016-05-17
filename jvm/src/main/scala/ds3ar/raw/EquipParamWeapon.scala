@@ -70,7 +70,7 @@ case class EquipParamWeapon(
     val reinforceParams = ParamReader.read[ReinforceParamWeapon]
 
     def find(key: Int): Error Xor ReinforceParamWeapon =  {
-      reinforceParams.find(_.id == key) match {
+      reinforceParams.find(_.normalizedId == key) match {
         case Some(p) => p.right
         case None => Error.NotFound(id, "reinforce param weapon", key).left
       }
@@ -78,8 +78,7 @@ case class EquipParamWeapon(
 
     val searchKey = reinforceTypeId + upgradeLevel
 
-    find(searchKey) orElse find(reinforceTypeId + upgradeLevel / 2) orElse find(reinforceTypeId)
-
+    find(searchKey) orElse find(searchKey - 1) orElse find(reinforceTypeId)
   }
 
   def reinforcedWeapon(upgradeLevel: Int): Error Xor WeaponReinforcement = {
@@ -277,4 +276,3 @@ case class EquipParamWeapon(
     })
   }
 }
-
