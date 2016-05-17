@@ -19,6 +19,12 @@ class EquipParamWeaponTest extends FunSuite {
     x.dark shouldBe y.dark +- precision
   }
 
+  def equalUpTo[T: Numeric](x: EffectFields[T], y: EffectFields[T], precision: T) = {
+    x.poison shouldBe y.poison +- precision
+    x.bleed shouldBe y.bleed +- precision
+    x.frost shouldBe y.frost +- precision
+  }
+
   def testSheet(fileName: String, levels: LevelFields[Int], upgradeLevel: Int) = {
     val wo = ParamReader.read[WeaponOverview](fileName)
 
@@ -34,8 +40,19 @@ class EquipParamWeaponTest extends FunSuite {
           equalUpTo(ar.map(_.toFloat), overview.ar, 0.0002f)
 
         case Xor.Left(error) =>
-          println(error)
+          sys.error(error.toString)
       }
+
+      val epwEff = epw.effects(levels, upgradeLevel)
+
+      epwEff match {
+        case Xor.Right(eff) =>
+          equalUpTo(eff.map(_.toFloat), overview.effects, 0.0002f)
+
+        case Xor.Left(error) =>
+          sys.error(error.toString)
+      }
+
     }
   }
 

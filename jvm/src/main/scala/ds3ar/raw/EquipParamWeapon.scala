@@ -193,7 +193,7 @@ case class EquipParamWeapon(
     val weaponReinforcementParams = weaponReinforcement(upgradeLevel)
 
     def find(key: Int): Error Xor SpEffectParam =
-      if (key == -1) SpEffectParam(0, 0, 0, 0, 0, 0, 0).right
+      if (key == -1 || key == 130071303) SpEffectParam(0, 0, 0, 0, 0, 0, 0).right
       else spEffectParams.find(_.id == key) match {
         case Some(s) => s.right
         case None => Error.NotFound(id, "SpEffectParam", key).left
@@ -217,7 +217,7 @@ case class EquipParamWeapon(
     } yield (a, b, c)
   }
 
-  def effectCoefficientSums(levels: LevelFields[Int], upgradeLevel: Int): Error Xor EffectFields[Double] = {
+  def effects(levels: LevelFields[Int], upgradeLevel: Int): Error Xor EffectFields[Double] = {
     for {
       statFunctions <- readStatFunctions
       reinforcement <- reinforcedWeapon(upgradeLevel)
@@ -233,7 +233,8 @@ case class EquipParamWeapon(
       val bleedStatWt = statFunctions.bleed(levels.luck)
       val poisonStatWt = statFunctions.poison(levels.luck)
 
-      def coef(useWpn: Double, statWt: Double) = 1 + useWpn * reinforcement.statModifiers.luck * statWt
+      def coef(useWpn: Double, statWt: Double) =
+        1 + useWpn * reinforcement.statModifiers.luck * statWt
 
       val bleedCoef = coef(bleedUseWpn, bleedStatWt)
       val poisonCoef = coef(poisonUseWpn, poisonStatWt)

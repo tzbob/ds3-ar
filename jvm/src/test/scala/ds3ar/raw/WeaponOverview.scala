@@ -29,4 +29,7 @@ case class WeaponOverview(
       lightningAR,
       darkAR
     )
+
+  val effects: EffectFields[Float] =
+    EffectFields(bleed, poison, frost)
 }
