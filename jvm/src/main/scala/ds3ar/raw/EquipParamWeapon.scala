@@ -55,7 +55,8 @@ case class EquipParamWeapon(
   properLuck: Byte,
   correctLuck: Float,
   weaponClass: Short,
-  aecpId: Int) {
+  aecpId: Int
+) {
 
   val coefficients: LevelFields[Float] =
     LevelFields(correctStrength, correctAgility, correctMagic, correctFaith, correctLuck)
@@ -66,12 +67,13 @@ case class EquipParamWeapon(
       attackBaseMagic,
       attackBaseFire,
       attackBaseThunder,
-      attackBaseDark)
+      attackBaseDark
+    )
 
   def weaponReinforcement(upgradeLevel: Int): Error Xor ReinforceParamWeapon = {
     val reinforceParams = ReinforceParamWeapon.all
 
-    def find(key: Int): Error Xor ReinforceParamWeapon =  {
+    def find(key: Int): Error Xor ReinforceParamWeapon = {
       reinforceParams.find(_.normalizedId == key) match {
         case Some(p) => p.right
         case None => Error.NotFound(id, "reinforce param weapon", key).left
@@ -94,14 +96,16 @@ case class EquipParamWeapon(
         wrp.correctAgilityRate,
         wrp.correctMagicRate,
         wrp.correctFaithRate,
-        wrp.correctLuckRate)
+        wrp.correctLuckRate
+      )
 
       val damageModifiers = WeaponDamageFields(
         wrp.physicsAtkRate,
         wrp.magicAtkRate,
         wrp.fireAtkRate,
         wrp.thunderAtkRate,
-        wrp.darkAtkRate)
+        wrp.darkAtkRate
+      )
 
       WeaponReinforcement(statModifiers, damageModifiers)
     }
@@ -137,35 +141,41 @@ case class EquipParamWeapon(
           aecp isSet 1,
           aecp isSet 2,
           aecp isSet 3,
-          aecp isSet 4),
+          aecp isSet 4
+        ),
 
         LevelFields(
           aecp isSet 5,
           aecp isSet 6,
           aecp isSet 7,
           aecp isSet 8,
-          aecp isSet 9),
+          aecp isSet 9
+        ),
 
         LevelFields(
           aecp isSet 10,
           aecp isSet 11,
           aecp isSet 12,
           aecp isSet 13,
-          aecp isSet 14),
+          aecp isSet 14
+        ),
 
         LevelFields(
           aecp isSet 15,
           aecp isSet 16,
           aecp isSet 17,
           aecp isSet 18,
-          aecp isSet 19),
+          aecp isSet 19
+        ),
 
         LevelFields(
           aecp isSet 20,
           aecp isSet 21,
           aecp isSet 22,
           aecp isSet 23,
-          aecp isSet 24))
+          aecp isSet 24
+        )
+      )
     }
 
   lazy val readStatFunctions: Error Xor DamageFields[CalcCorrectGraph] = {
