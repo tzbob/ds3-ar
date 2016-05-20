@@ -15,7 +15,7 @@ object EquipParamWeapon {
 }
 
 case class EquipParamWeapon(rep: ProtoBuf.EquipParamWeapon) extends AnyVal {
-  def coefficients: LevelFields[Float] =
+  private def coefficients: LevelFields[Float] =
     LevelFields(
       rep.correctStrength,
       rep.correctAgility,
@@ -70,7 +70,7 @@ case class EquipParamWeapon(rep: ProtoBuf.EquipParamWeapon) extends AnyVal {
     }
   }
 
-  def spEffectParam(upgradeLevel: Int): Error Xor (EffectFields[Int], EffectFields[Int], EffectFields[Int]) = {
+  private def effectBase(upgradeLevel: Int): Error Xor (EffectFields[Int], EffectFields[Int], EffectFields[Int]) = {
     val weaponReinforcementParams = readReinforceParamWeapon(upgradeLevel)
 
     def find(key: Int): Error Xor EffectFields[Int] =
@@ -96,23 +96,23 @@ case class EquipParamWeapon(rep: ProtoBuf.EquipParamWeapon) extends AnyVal {
     } yield (a, b, c)
   }
 
-  def effects(levels: LevelFields[Int], upgradeLevel: Int): Error Xor EffectFields[Double] = {
+  def effects(levels: LevelFields[Int], upgradeLevel: Int): Error Xor EffectFields[Float] = {
     for {
       statFunctions <- readStatFunctions
       reinforcement <- reinforcedWeapon(upgradeLevel)
 
       // FIXME: Ignoring eoh3, speculation that eoh3 models effect on hit effects that affect the user
-      sparams <- spEffectParam(upgradeLevel)
+      sparams <- effectBase(upgradeLevel)
     } yield {
       val (eoh1, eoh2, _) = sparams
 
-      val bleedUseWpn = rep.correctLuck * 0.01
+      val bleedUseWpn = rep.correctLuck * 0.01f
       val poisonUseWpn = bleedUseWpn
 
       val bleedStatWt = statFunctions.bleed(levels.luck)
       val poisonStatWt = statFunctions.poison(levels.luck)
 
-      def coef(useWpn: Double, statWt: Double) =
+      def coef(useWpn: Float, statWt: Float): Float =
         1 + useWpn * reinforcement.statModifiers.luck * statWt
 
       val bleedCoef = coef(bleedUseWpn, bleedStatWt)
@@ -129,7 +129,7 @@ case class EquipParamWeapon(rep: ProtoBuf.EquipParamWeapon) extends AnyVal {
     }
   }
 
-  def weaponDamageCoefficientSums(levels: LevelFields[Int], upgradeLevel: Int): Error Xor WeaponDamageFields[Double] = {
+  private def weaponDamageCoefficientSums(levels: LevelFields[Int], upgradeLevel: Int): Error Xor WeaponDamageFields[Float] = {
     val statCoefficient = for {
       aecp <- readAecp
       weaponDamageAecpFields <- readAecpWeaponDamageFields
@@ -140,13 +140,13 @@ case class EquipParamWeapon(rep: ProtoBuf.EquipParamWeapon) extends AnyVal {
 
       (weaponDamageStatFunctions |@| aecp.betas |@| weaponDamageAecpFields) map { (statFunction, beta, aecpFields) =>
         val useWpns = (aecpFields |@| coefficients) map { (isSet, coef) =>
-          if (isSet) 0.01 * coef else 0
+          if (isSet) 0.01f * coef else 0
         }
 
         val statWts = levels.map(x => statFunction(x))
 
         (useWpns |@| rw.statModifiers |@| beta |@| statWts) map { (useWpn, mod, beta, statWt) =>
-          useWpn * mod * beta * statWt * 0.01
+          useWpn * mod * beta * statWt * 0.01f
         }
       }
     }
@@ -156,7 +156,14 @@ case class EquipParamWeapon(rep: ProtoBuf.EquipParamWeapon) extends AnyVal {
     })
   }
 
-  def reinforcedAR(levels: LevelFields[Int], upgradeLevel: Int): Error Xor WeaponDamageFields[Double] =
+  /**
+   * Computes the reinforced attack rating for a user with an upgraded weapon
+   * for each damage type.
+   * @param levels
+   * @param upgradeLevel
+   * @return attack rating for each damage type or an error
+   */
+  def reinforcedAR(levels: LevelFields[Int], upgradeLevel: Int): Error Xor WeaponDamageFields[Float] =
     for {
       coef <- weaponDamageCoefficientSums(levels, upgradeLevel)
       base <- reinforcedBase(upgradeLevel)

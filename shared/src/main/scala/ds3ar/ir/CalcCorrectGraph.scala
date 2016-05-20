@@ -14,7 +14,7 @@ object CalcCorrectGraph {
 }
 
 case class CalcCorrectGraph(rep: ProtoBuf.CalcCorrectGraph) extends AnyVal {
-  def apply(stat: Float): Double = {
+  def apply(stat: Float): Float = {
     require(stat > 0 && stat <= 99)
 
     val (xA, xB, yA, yB, p) =
@@ -37,13 +37,13 @@ case class CalcCorrectGraph(rep: ProtoBuf.CalcCorrectGraph) extends AnyVal {
     yA: Float,
     yB: Float,
     p: Float
-  ): Double = {
+  ): Float = {
     val dx = (stat - xA) / (xB - xA)
 
     val fdx =
       if (p > 0) Math.pow(dx, p)
       else 1 - Math.pow(1 - dx, -p)
 
-    yA + fdx * (yB - yA)
+    yA + fdx.toFloat * (yB - yA)
   }
 }
