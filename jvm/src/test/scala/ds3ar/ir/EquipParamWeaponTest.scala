@@ -1,4 +1,4 @@
-package ds3ar.raw
+package ds3ar.ir
 
 import cats.data.Xor
 
@@ -28,11 +28,8 @@ class EquipParamWeaponTest extends FunSuite {
   def testSheet(fileName: String, levels: LevelFields[Int], upgradeLevel: Int) = {
     val wo = ParamReader.read[WeaponOverview](fileName)
 
-    val epws = ParamReader.read[EquipParamWeapon]
-    val epwsMap = epws.map(x => x.id -> x).toMap
-
     wo.foreach { overview =>
-      val epw = epwsMap(overview.id)
+      val epw = EquipParamWeapon.find(overview.id).toOption.get
       val epwAR = epw.reinforcedAR(levels, upgradeLevel)
 
       epwAR match {

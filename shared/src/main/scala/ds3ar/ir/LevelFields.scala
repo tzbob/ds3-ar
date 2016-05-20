@@ -1,4 +1,4 @@
-package ds3ar.raw
+package ds3ar.ir
 
 import cats._
 

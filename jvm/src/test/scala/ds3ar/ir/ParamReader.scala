@@ -1,4 +1,4 @@
-package ds3ar.raw
+package ds3ar.ir
 
 import kantan.csv.{ CsvReader, ReadResult, RowDecoder }
 import kantan.csv.ops._     // kantan.csv syntax
@@ -12,7 +12,7 @@ trait ParamReader[T] {
 }
 
 object ParamReader {
-  private[raw] def reader[T](fileName: String): ParamReader[T] =
+  private[ir] def reader[T](fileName: String): ParamReader[T] =
     new ParamReader[T] { val fileName0 = fileName }
 
   private def readFile(fileName: String): String =

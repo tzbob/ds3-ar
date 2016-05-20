@@ -1,15 +1,23 @@
+import com.trueaccord.scalapb.{ScalaPbPlugin => PB}
+
 scalaVersion in ThisBuild := "2.11.8"
 
-lazy val root = project.in(file(".")).
+lazy val cross = project.in(file(".")).
   aggregate(ds3arJS, ds3arJVM).
   settings(
     publish := {},
     publishLocal := {}
   )
 
+lazy val protobufSource = sourceDirectory in PB.protobufConfig := file("shared/src/main/protobuf")
+lazy val protobufIncludePath = PB.includePaths in PB.protobufConfig := Seq(file("shared/src/main/protobuf"))
+lazy val protobufRunCommand = PB.runProtoc in PB.protobufConfig := (args => com.github.os72.protocjar.Protoc.runProtoc("-v300" +: args.toArray))
+lazy val protobufVersion = (version in PB.protobufConfig := "3.0.0-beta-2")
+lazy val protobufSettings = PB.protobufSettings :+ protobufSource :+ protobufIncludePath :+ protobufRunCommand :+ protobufVersion
+
 lazy val ds3ar = crossProject.in(file("."))
   .settings(
-    organization := "ds3ar",
+    organization := "com.github.tzbob",
     name := "ds3ar",
     autoCompilerPlugins := true,
 
@@ -33,16 +41,20 @@ lazy val ds3ar = crossProject.in(file("."))
 
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats" % "0.5.0",
-      "org.scalatest" %% "scalatest" % "3.0.0-M10" % "test"
+      "org.scalatest" %%% "scalatest" % "3.0.0-M10" % "test"
     )
   )
+  .jvmSettings(protobufSettings: _*)
   .jvmSettings(
     libraryDependencies ++= Seq(
       "com.nrinaudo" %% "kantan.csv-generic" % "0.1.10"
     )
   )
+  .jsSettings(protobufSettings: _*)
   .jsSettings(
-    libraryDependencies ++= Seq()
+    libraryDependencies ++= Seq(
+      // "com.trueaccord.scalapb" %%% "scalapb-runtime" % "0.5.18" % PB.protobufConfig
+    )
   )
 
 // Needed, so sbt finds the projects
