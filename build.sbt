@@ -12,8 +12,8 @@ lazy val cross = project.in(file(".")).
 lazy val protobufSource = sourceDirectory in PB.protobufConfig := file("shared/src/main/protobuf")
 lazy val protobufIncludePath = PB.includePaths in PB.protobufConfig := Seq(file("shared/src/main/protobuf"))
 lazy val protobufRunCommand = PB.runProtoc in PB.protobufConfig := (args => com.github.os72.protocjar.Protoc.runProtoc("-v300" +: args.toArray))
-lazy val protobufVersion = (version in PB.protobufConfig := "3.0.0-beta-2")
-lazy val protobufSettings = PB.protobufSettings :+ protobufSource :+ protobufIncludePath :+ protobufRunCommand :+ protobufVersion
+lazy val protobufVersion = (version in PB.protobufConfig := "3.0.0-beta-1")
+lazy val protobufSettings = PB.protobufSettings :+ protobufSource :+ protobufIncludePath :+ protobufRunCommand:+ protobufVersion
 
 lazy val ds3ar = crossProject.in(file("."))
   .settings(
@@ -53,7 +53,9 @@ lazy val ds3ar = crossProject.in(file("."))
   .jsSettings(protobufSettings: _*)
   .jsSettings(
     libraryDependencies ++= Seq(
-      // "com.trueaccord.scalapb" %%% "scalapb-runtime" % "0.5.18" % PB.protobufConfig
+      "com.trueaccord.scalapb" %%% "scalapb-runtime" % "0.5.16",
+      "com.trueaccord.scalapb" %%% "scalapb-runtime" % "0.5.16" % PB.protobufConfig,
+      "com.lihaoyi" %%% "scalatags" % "0.5.5"
     )
   )
 
