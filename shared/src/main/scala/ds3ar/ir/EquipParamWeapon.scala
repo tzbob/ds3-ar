@@ -24,7 +24,7 @@ case class EquipParamWeapon(rep: ProtoBuf.EquipParamWeapon) extends AnyVal {
       rep.correctLuck
     )
 
-  def base: WeaponDamageFields[Int] =
+  private def base: WeaponDamageFields[Int] =
     WeaponDamageFields(
       rep.attackBasePhysics,
       rep.attackBaseMagic,
@@ -41,9 +41,22 @@ case class EquipParamWeapon(rep: ProtoBuf.EquipParamWeapon) extends AnyVal {
     find(searchKey) orElse find(searchKey - 1) orElse find(reinforceTypeId)
   }
 
-  def reinforcedWeapon(upgradeLevel: Int): Error Xor WeaponReinforcement =
+  private def reinforcedWeapon(upgradeLevel: Int): Error Xor WeaponReinforcement =
     readReinforceParamWeapon(upgradeLevel).map(_.reinforcement)
 
+  /**
+   * Returns the reinforced base stats.
+   *
+   * Takes the regular base values (starting numbers, i.e. +0 version for all
+   * damage types (physical, magic, etc.)) and computes the increased values for
+   * +upgradeLevel weapons by multiplying with the damage modifiers obtained
+   * through reinforcing a weapon.
+   *
+   * @param upgradeLevel targeted upgrade level (normalization for +5 is accounted for, i.e. +10 -> +5)
+   * @return
+   * reinforced base stats or an error if there is no corresponding entry in
+   * the reinforcement table
+   */
   def reinforcedBase(upgradeLevel: Int): Error Xor WeaponDamageFields[Float] =
     for {
       reinforcement <- reinforcedWeapon(upgradeLevel)
@@ -52,10 +65,10 @@ case class EquipParamWeapon(rep: ProtoBuf.EquipParamWeapon) extends AnyVal {
   private def readAecp: Error Xor AttackElementCorrectParam =
     AttackElementCorrectParam.find(rep.aecpId)
 
-  def readAecpWeaponDamageFields: Error Xor WeaponDamageFields[LevelFields[Boolean]] =
+  private def readAecpWeaponDamageFields: Error Xor WeaponDamageFields[LevelFields[Boolean]] =
     readAecp.map(_.weaponDamageFieldsIsSet)
 
-  def readStatFunctions: Error Xor DamageFields[CalcCorrectGraph] = {
+  private def readStatFunctions: Error Xor DamageFields[CalcCorrectGraph] = {
     def find = CalcCorrectGraph.find _
     for {
       psf <- find(rep.physicsStatFunc)
@@ -70,6 +83,16 @@ case class EquipParamWeapon(rep: ProtoBuf.EquipParamWeapon) extends AnyVal {
     }
   }
 
+  /**
+   * Returns the reinforced effect base stats.
+   *
+   * Looks up reinforced effect base stats for the three special effect
+   * behaviors.
+   * @param upgradeLevel
+   * @return
+   * the reinforced base stats an error if no corresponding entries are found in
+   * the reinforcement tables
+   */
   private def effectBase(upgradeLevel: Int): Error Xor (EffectFields[Int], EffectFields[Int], EffectFields[Int]) = {
     val weaponReinforcementParams = readReinforceParamWeapon(upgradeLevel)
 
@@ -96,6 +119,20 @@ case class EquipParamWeapon(rep: ProtoBuf.EquipParamWeapon) extends AnyVal {
     } yield (a, b, c)
   }
 
+  /**
+   * Returns the final effect values for a user with an upgraded weapon.
+   *
+   * Computes the total effect value by multiplying the coefficients with the
+   * base values. Computes the coefficients by multiplying the weapon effect
+   * efficiency (derived from luck), the luck modifiers from the reinforced
+   * weapon and the luck scaling coefficients computed with the luck stat
+   * function from this weapon.
+   * @param levels
+   * @param upgradeLevel
+   * @return
+   * the complete effect values for a user with levels on a +upgradeLevel weapon
+   * or an error if an entry is not available in a corresponding table
+   */
   def effects(levels: LevelFields[Int], upgradeLevel: Int): Error Xor EffectFields[Float] = {
     for {
       statFunctions <- readStatFunctions
