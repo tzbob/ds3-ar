@@ -14,5 +14,5 @@ object SpEffectParam {
 }
 
 case class SpEffectParam(rep: ProtoBuf.SpEffectParam) extends AnyVal {
-  def base: EffectFields[Int] = EffectFields(rep.poisonAttackPower, rep.bloodAttackPower, rep.frostAttackPower)
+  def base: EffectFields[Int] = EffectFields(rep.bloodAttackPower, rep.poisonAttackPower, rep.frostAttackPower)
 }

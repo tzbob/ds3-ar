@@ -20,8 +20,8 @@ class EquipParamWeaponTest extends FunSuite {
   }
 
   def equalUpTo[T: Numeric](x: EffectFields[T], y: EffectFields[T], precision: T) = {
-    x.poison shouldBe y.poison +- precision
     x.bleed shouldBe y.bleed +- precision
+    x.poison shouldBe y.poison +- precision
     x.frost shouldBe y.frost +- precision
   }
 
