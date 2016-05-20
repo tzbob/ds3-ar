@@ -1,19 +1,17 @@
 package ds3ar.ir
 
 import cats.data.Xor
-import ds3ext.{ds3ext => ProtoBuf}
+import ds3ext.ds3ext
+import java.io.InputStream
 
 object CalcCorrectGraph {
-  private val protoBufferData =
-    ProtoBufferUtility.read(ProtoBuf.CalcCorrectGraph)
-  lazy val all = protoBufferData.map(CalcCorrectGraph.apply)
-  lazy val map = all.map(x => x.rep.id -> x).toMap
-
-  def find(key: Int): Error Xor CalcCorrectGraph =
-    Xor.fromOption(map.get(key), Error.NotFound("Calc Correct Graph", key))
+  def manager(in: InputStream): DataManager[Int, CalcCorrectGraph] =
+    DataManager(in, ds3ext.CalcCorrectGraph, "Attack Element Correct Param")(
+      CalcCorrectGraph.apply
+    )(_.rep.id)
 }
 
-case class CalcCorrectGraph(rep: ProtoBuf.CalcCorrectGraph) extends AnyVal {
+case class CalcCorrectGraph(private val rep: ds3ext.CalcCorrectGraph) extends AnyVal {
   def apply(stat: Float): Float = {
     require(stat > 0 && stat <= 99)
 

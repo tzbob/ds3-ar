@@ -29,7 +29,7 @@ class EquipParamWeaponTest extends FunSuite {
     val wo = ParamReader.read[WeaponOverview](fileName)
 
     wo.foreach { overview =>
-      val epw = EquipParamWeapon.find(overview.id).toOption.get
+      val epw = StaticResourceDataManager.equipParamWeaponManager.find(overview.id).toOption.get
       val epwAR = epw.reinforcedAR(levels, upgradeLevel)
 
       epwAR match {

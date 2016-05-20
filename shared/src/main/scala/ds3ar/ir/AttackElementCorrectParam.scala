@@ -1,19 +1,17 @@
 package ds3ar.ir
 
 import cats.data.Xor
-import ds3ext.{ds3ext => ProtoBuf}
+import ds3ext.ds3ext
+import java.io.InputStream
 
 object AttackElementCorrectParam {
-  private val protoBufferData =
-    ProtoBufferUtility.read(ProtoBuf.AttackElementCorrectParam)
-  lazy val all = protoBufferData.map(AttackElementCorrectParam.apply)
-  lazy val map = all.map(x => x.rep.id -> x).toMap
-
-  def find(key: Int): Error Xor AttackElementCorrectParam =
-    Xor.fromOption(map.get(key), Error.NotFound("Attack Element Correct Param", key))
+  def manager(in: InputStream): DataManager[Int, AttackElementCorrectParam] =
+    DataManager(in, ds3ext.AttackElementCorrectParam, "Attack Element Correct Param")(
+      AttackElementCorrectParam.apply
+    )(_.rep.id)
 }
 
-case class AttackElementCorrectParam(rep: ProtoBuf.AttackElementCorrectParam) extends AnyVal {
+case class AttackElementCorrectParam(private val rep: ds3ext.AttackElementCorrectParam) extends AnyVal {
   private def isSet(index: Int): Boolean = {
     val n = Math.pow(2, index).toInt
     (rep.bitmask & n) == n

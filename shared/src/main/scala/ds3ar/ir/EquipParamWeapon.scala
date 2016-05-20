@@ -3,21 +3,35 @@ package ds3ar.ir
 import cats.data.Xor
 import cats.syntax.all._
 
-import ds3ext.{ds3ext => ProtoBuf}
+import ds3ext.ds3ext
+import java.io.InputStream
 
 object EquipParamWeapon {
-  private val protoBufferData = ProtoBufferUtility.read(ProtoBuf.EquipParamWeapon)
-  lazy val all = protoBufferData.map(EquipParamWeapon.apply)
-  lazy val map = all.map(x => x.rep.id -> x).toMap
+  def manager(
+    epwStream: InputStream,
+    rpwStream: InputStream,
+    aecpStream: InputStream,
+    ccgStream: InputStream,
+    sepStream: InputStream
+  ): DataManager[Int, EquipParamWeapon] = {
+    val rpwM = ReinforceParamWeapon.manager(rpwStream)
+    val aecpM = AttackElementCorrectParam.manager(aecpStream)
+    val ccgM = CalcCorrectGraph.manager(ccgStream)
+    val sepM = SpEffectParam.manager(sepStream)
 
-  def find(key: Int): Error Xor EquipParamWeapon =
-    Xor.fromOption(map.get(key), Error.NotFound("Equip Param Weapon", key))
+    DataManager(epwStream, ds3ext.EquipParamWeapon, "Equip Param Weapon")(
+      x => EquipParamWeapon(x, rpwM, aecpM, ccgM, sepM)
+    )(_.rep.id)
+  }
 }
 
-case class EquipParamWeapon(rep: ProtoBuf.EquipParamWeapon) extends AnyVal {
-
-  def isHollow: Boolean = rep.id.toString.endsWith("1500")
-
+case class EquipParamWeapon(
+  private val rep: ds3ext.EquipParamWeapon,
+  private val rpwManager: DataManager[Int, ReinforceParamWeapon],
+  private val aecpManager: DataManager[Int, AttackElementCorrectParam],
+  private val ccgManager: DataManager[Int, CalcCorrectGraph],
+  private val sepManager: DataManager[Int, SpEffectParam]
+) {
   private def coefficients: LevelFields[Float] =
     LevelFields(
       rep.correctStrength,
@@ -39,7 +53,7 @@ case class EquipParamWeapon(rep: ProtoBuf.EquipParamWeapon) extends AnyVal {
   private def readReinforceParamWeapon(upgradeLevel: Int): Error Xor ReinforceParamWeapon = {
     val reinforceTypeId = rep.reinforceTypeId
     val searchKey = reinforceTypeId + upgradeLevel
-    val find = ReinforceParamWeapon.find _
+    val find = rpwManager.find _
 
     find(searchKey) orElse find(searchKey - 1) orElse find(reinforceTypeId)
   }
@@ -65,14 +79,14 @@ case class EquipParamWeapon(rep: ProtoBuf.EquipParamWeapon) extends AnyVal {
       reinforcement <- reinforcedWeapon(upgradeLevel)
     } yield (base |@| reinforcement.damageModifiers) map (_ * _)
 
-  private def readAecp: Error Xor AttackElementCorrectParam =
-    AttackElementCorrectParam.find(rep.aecpId)
+  private val readAecp: Error Xor AttackElementCorrectParam =
+    aecpManager.find(rep.aecpId)
 
-  private def readAecpWeaponDamageFields: Error Xor WeaponDamageFields[LevelFields[Boolean]] =
+  private val readAecpWeaponDamageFields: Error Xor WeaponDamageFields[LevelFields[Boolean]] =
     readAecp.map(_.weaponDamageFieldsIsSet)
 
-  private def readStatFunctions: Error Xor DamageFields[CalcCorrectGraph] = {
-    def find = CalcCorrectGraph.find _
+  private val readStatFunctions: Error Xor DamageFields[CalcCorrectGraph] = {
+    def find = ccgManager.find _
     for {
       psf <- find(rep.physicsStatFunc)
       msf <- find(rep.magicStatFunc)
@@ -102,7 +116,7 @@ case class EquipParamWeapon(rep: ProtoBuf.EquipParamWeapon) extends AnyVal {
     def find(key: Int): Error Xor EffectFields[Int] =
       // FIXME: Hardcoded '-1' and missing Effect?
       if (key == -1 || key == 130071303) EffectFields(0, 0, 0).right
-      else SpEffectParam.find(key).map(_.base)
+      else sepManager.find(key).map(_.base)
 
     for {
       wrp <- weaponReinforcementParams

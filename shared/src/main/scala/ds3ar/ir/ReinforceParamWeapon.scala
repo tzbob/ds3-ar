@@ -1,19 +1,17 @@
 package ds3ar.ir
 
 import cats.data.Xor
-import ds3ext.{ds3ext => ProtoBuf}
+import ds3ext.ds3ext
+import java.io.InputStream
 
 object ReinforceParamWeapon {
-  private val protoBufferData =
-    ProtoBufferUtility.read(ProtoBuf.ReinforceParamWeapon)
-  lazy val all = protoBufferData.map(ReinforceParamWeapon.apply)
-  lazy val map = all.map(x => x.normalizedId -> x).toMap
-
-  def find(key: Int): Error Xor ReinforceParamWeapon =
-    Xor.fromOption(map.get(key), Error.NotFound("Reinforce Param Weapon", key))
+  def manager(in: InputStream): DataManager[Int, ReinforceParamWeapon] =
+    DataManager(in, ds3ext.ReinforceParamWeapon, "Reinforce Param Weapon")(
+      ReinforceParamWeapon.apply
+    )(_.normalizedId)
 }
 
-case class ReinforceParamWeapon(private val rep: ProtoBuf.ReinforceParamWeapon) extends AnyVal {
+case class ReinforceParamWeapon(private val rep: ds3ext.ReinforceParamWeapon) extends AnyVal {
   def normalizedId: Int = rep.id / 100 * 100 + rep.materialSetId2
 
   def specialEffectId1: Int = rep.spEffectId1
