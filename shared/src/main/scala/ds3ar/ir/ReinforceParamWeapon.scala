@@ -5,7 +5,7 @@ import ds3ext.{ds3ext => ProtoBuf}
 
 object ReinforceParamWeapon {
   private val protoBufferData =
-    ProtoBufferHelper.read(ProtoBuf.ReinforceParamWeapon)
+    ProtoBufferUtility.read(ProtoBuf.ReinforceParamWeapon)
   lazy val all = protoBufferData.map(ReinforceParamWeapon.apply)
   lazy val map = all.map(x => x.normalizedId -> x).toMap
 

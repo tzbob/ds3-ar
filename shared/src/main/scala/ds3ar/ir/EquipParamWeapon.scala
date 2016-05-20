@@ -6,7 +6,7 @@ import cats.syntax.all._
 import ds3ext.{ds3ext => ProtoBuf}
 
 object EquipParamWeapon {
-  private val protoBufferData = ProtoBufferHelper.read(ProtoBuf.EquipParamWeapon)
+  private val protoBufferData = ProtoBufferUtility.read(ProtoBuf.EquipParamWeapon)
   lazy val all = protoBufferData.map(EquipParamWeapon.apply)
   lazy val map = all.map(x => x.rep.id -> x).toMap
 
@@ -15,6 +15,9 @@ object EquipParamWeapon {
 }
 
 case class EquipParamWeapon(rep: ProtoBuf.EquipParamWeapon) extends AnyVal {
+
+  def isHollow: Boolean = rep.id.toString.endsWith("1500")
+
   private def coefficients: LevelFields[Float] =
     LevelFields(
       rep.correctStrength,

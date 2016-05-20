@@ -5,7 +5,7 @@ import ds3ext.{ds3ext => ProtoBuf}
 
 object CalcCorrectGraph {
   private val protoBufferData =
-    ProtoBufferHelper.read(ProtoBuf.CalcCorrectGraph)
+    ProtoBufferUtility.read(ProtoBuf.CalcCorrectGraph)
   lazy val all = protoBufferData.map(CalcCorrectGraph.apply)
   lazy val map = all.map(x => x.rep.id -> x).toMap
 

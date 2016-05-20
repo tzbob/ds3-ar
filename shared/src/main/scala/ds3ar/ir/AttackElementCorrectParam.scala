@@ -5,7 +5,7 @@ import ds3ext.{ds3ext => ProtoBuf}
 
 object AttackElementCorrectParam {
   private val protoBufferData =
-    ProtoBufferHelper.read(ProtoBuf.AttackElementCorrectParam)
+    ProtoBufferUtility.read(ProtoBuf.AttackElementCorrectParam)
   lazy val all = protoBufferData.map(AttackElementCorrectParam.apply)
   lazy val map = all.map(x => x.rep.id -> x).toMap
 

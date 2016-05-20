@@ -5,7 +5,7 @@ import ds3ext.{ds3ext => ProtoBuf}
 
 object SpEffectParam {
   private val protoBufferData =
-    ProtoBufferHelper.read(ProtoBuf.SpEffectParam)
+    ProtoBufferUtility.read(ProtoBuf.SpEffectParam)
   lazy val all = protoBufferData.map(SpEffectParam.apply)
   lazy val map = all.map(x => x.rep.id -> x).toMap
 
