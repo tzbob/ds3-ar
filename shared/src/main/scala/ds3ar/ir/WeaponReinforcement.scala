@@ -1,6 +1,6 @@
 package ds3ar.ir
 
 case class WeaponReinforcement(
-  statModifiers: LevelFields[Float],
+  statModifiers: OffensiveLevelFields[Float],
   damageModifiers: WeaponDamageFields[Float]
 )

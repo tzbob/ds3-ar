@@ -19,7 +19,7 @@ case class ReinforceParamWeapon(private val rep: ds3ext.ReinforceParamWeapon) ex
   def specialEffectId3: Int = rep.spEffectId3
 
   def reinforcement: WeaponReinforcement = {
-    val statModifiers = LevelFields(
+    val statModifiers = OffensiveLevelFields(
       rep.correctStrengthRate,
       rep.correctAgilityRate,
       rep.correctMagicRate,

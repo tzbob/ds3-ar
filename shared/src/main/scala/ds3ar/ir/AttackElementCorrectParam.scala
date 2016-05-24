@@ -17,9 +17,9 @@ case class AttackElementCorrectParam(private val rep: ds3ext.AttackElementCorrec
     (rep.bitmask & n) == n
   }
 
-  def weaponDamageFieldsIsSet: WeaponDamageFields[LevelFields[Boolean]] =
+  def weaponDamageFieldsIsSet: WeaponDamageFields[OffensiveLevelFields[Boolean]] =
     WeaponDamageFields(
-      LevelFields(
+      OffensiveLevelFields(
         this isSet 0,
         this isSet 1,
         this isSet 2,
@@ -27,7 +27,7 @@ case class AttackElementCorrectParam(private val rep: ds3ext.AttackElementCorrec
         this isSet 4
       ),
 
-      LevelFields(
+      OffensiveLevelFields(
         this isSet 5,
         this isSet 6,
         this isSet 7,
@@ -35,7 +35,7 @@ case class AttackElementCorrectParam(private val rep: ds3ext.AttackElementCorrec
         this isSet 9
       ),
 
-      LevelFields(
+      OffensiveLevelFields(
         this isSet 10,
         this isSet 11,
         this isSet 12,
@@ -43,7 +43,7 @@ case class AttackElementCorrectParam(private val rep: ds3ext.AttackElementCorrec
         this isSet 14
       ),
 
-      LevelFields(
+      OffensiveLevelFields(
         this isSet 15,
         this isSet 16,
         this isSet 17,
@@ -51,7 +51,7 @@ case class AttackElementCorrectParam(private val rep: ds3ext.AttackElementCorrec
         this isSet 19
       ),
 
-      LevelFields(
+      OffensiveLevelFields(
         this isSet 20,
         this isSet 21,
         this isSet 22,
@@ -60,18 +60,18 @@ case class AttackElementCorrectParam(private val rep: ds3ext.AttackElementCorrec
       )
     )
 
-  def physicalBetas: LevelFields[Int] = {
+  def physicalBetas: OffensiveLevelFields[Int] = {
     val str = rep.v25
     val dex = rep.v26
     val int = rep.v27
     val fai = rep.v28
     val lck = rep.v29
 
-    LevelFields(str, dex, int, fai, lck)
+    OffensiveLevelFields(str, dex, int, fai, lck)
   }
 
-  def magicBetas: LevelFields[Int] =
-    LevelFields(
+  def magicBetas: OffensiveLevelFields[Int] =
+    OffensiveLevelFields(
       rep.v30,
       rep.v31,
       rep.v32,
@@ -79,8 +79,8 @@ case class AttackElementCorrectParam(private val rep: ds3ext.AttackElementCorrec
       rep.v34
     )
 
-  def fireBetas: LevelFields[Int] =
-    LevelFields(
+  def fireBetas: OffensiveLevelFields[Int] =
+    OffensiveLevelFields(
       rep.v35,
       rep.v36,
       rep.v37,
@@ -88,8 +88,8 @@ case class AttackElementCorrectParam(private val rep: ds3ext.AttackElementCorrec
       rep.v39
     )
 
-  def lightningBetas: LevelFields[Int] =
-    LevelFields(
+  def lightningBetas: OffensiveLevelFields[Int] =
+    OffensiveLevelFields(
       rep.v40,
       rep.v41,
       rep.v42,
@@ -97,8 +97,8 @@ case class AttackElementCorrectParam(private val rep: ds3ext.AttackElementCorrec
       rep.v44
     )
 
-  def darkBetas: LevelFields[Int] =
-    LevelFields(
+  def darkBetas: OffensiveLevelFields[Int] =
+    OffensiveLevelFields(
       rep.v45,
       rep.v46,
       rep.v47,
@@ -106,7 +106,7 @@ case class AttackElementCorrectParam(private val rep: ds3ext.AttackElementCorrec
       rep.v49
     )
 
-  def betas: WeaponDamageFields[LevelFields[Int]] =
+  def betas: WeaponDamageFields[OffensiveLevelFields[Int]] =
     WeaponDamageFields(
       physicalBetas,
       magicBetas,

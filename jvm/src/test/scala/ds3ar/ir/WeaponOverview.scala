@@ -20,7 +20,6 @@ case class WeaponOverview(
   poison: Float,
   frost: Float
 ) {
-
   val ar: WeaponDamageFields[Float] =
     WeaponDamageFields(
       physicalAR,

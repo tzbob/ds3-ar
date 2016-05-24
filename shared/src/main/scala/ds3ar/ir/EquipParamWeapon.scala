@@ -32,8 +32,8 @@ case class EquipParamWeapon(
   private val ccgManager: DataManager[Int, CalcCorrectGraph],
   private val sepManager: DataManager[Int, SpEffectParam]
 ) {
-  private def coefficients: LevelFields[Float] =
-    LevelFields(
+  private def coefficients: OffensiveLevelFields[Float] =
+    OffensiveLevelFields(
       rep.correctStrength,
       rep.correctAgility,
       rep.correctMagic,
@@ -82,7 +82,7 @@ case class EquipParamWeapon(
   private val readAecp: Error Xor AttackElementCorrectParam =
     aecpManager.find(rep.aecpId)
 
-  private val readAecpWeaponDamageFields: Error Xor WeaponDamageFields[LevelFields[Boolean]] =
+  private val readAecpWeaponDamageFields: Error Xor WeaponDamageFields[OffensiveLevelFields[Boolean]] =
     readAecp.map(_.weaponDamageFieldsIsSet)
 
   private val readStatFunctions: Error Xor DamageFields[CalcCorrectGraph] = {
@@ -150,7 +150,7 @@ case class EquipParamWeapon(
    * the complete effect values for a user with levels on a +upgradeLevel weapon
    * or an error if an entry is not available in a corresponding table
    */
-  def effects(levels: LevelFields[Int], upgradeLevel: Int): Error Xor EffectFields[Float] = {
+  def effects(levels: OffensiveLevelFields[Int], upgradeLevel: Int): Error Xor EffectFields[Float] = {
     for {
       statFunctions <- readStatFunctions
       reinforcement <- reinforcedWeapon(upgradeLevel)
@@ -183,7 +183,7 @@ case class EquipParamWeapon(
     }
   }
 
-  private def weaponDamageCoefficientSums(levels: LevelFields[Int], upgradeLevel: Int): Error Xor WeaponDamageFields[Float] = {
+  private def weaponDamageCoefficientSums(levels: OffensiveLevelFields[Int], upgradeLevel: Int): Error Xor WeaponDamageFields[Float] = {
     val statCoefficient = for {
       aecp <- readAecp
       weaponDamageAecpFields <- readAecpWeaponDamageFields
@@ -206,7 +206,7 @@ case class EquipParamWeapon(
     }
 
     statCoefficient.map(_.map { x =>
-      1 + x.sum
+      1 + x.sumOffensive
     })
   }
 
@@ -217,7 +217,7 @@ case class EquipParamWeapon(
    * @param upgradeLevel
    * @return attack rating for each damage type or an error
    */
-  def reinforcedAR(levels: LevelFields[Int], upgradeLevel: Int): Error Xor WeaponDamageFields[Float] =
+  def reinforcedAR(levels: OffensiveLevelFields[Int], upgradeLevel: Int): Error Xor WeaponDamageFields[Float] =
     for {
       coef <- weaponDamageCoefficientSums(levels, upgradeLevel)
       base <- reinforcedBase(upgradeLevel)
