@@ -8,6 +8,10 @@ import cats.syntax.all._
 import org.scalatest.FunSuite
 
 import org.scalatest.Matchers._
+import scala.concurrent.Await
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
 class EquipParamWeaponTest extends FunSuite {
 
@@ -26,10 +30,14 @@ class EquipParamWeaponTest extends FunSuite {
   }
 
   def testSheet(fileName: String, levels: LevelFields[Int], upgradeLevel: Int) = {
-    val wo = ParamReader.read[WeaponOverview](fileName)
+    val wo = ParamReader.read[WeaponOverview]("/v1.6" + fileName)
+    val epwmFuture = FileResourceDataManager
+      .equipParamWeaponManagerFor("v1.6")
 
     wo.foreach { overview =>
-      val epw = StaticResourceDataManager.equipParamWeaponManager.find(overview.id).toOption.get
+      val epwFuture = epwmFuture.map(_.find(overview.id))
+      val epw = Await.result(epwFuture, 1 second).toOption.get
+
       val epwAR = epw.reinforcedAR(levels, upgradeLevel)
 
       epwAR match {
