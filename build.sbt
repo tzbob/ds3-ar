@@ -17,12 +17,13 @@ lazy val protobufSettings = PB.protobufSettings :+ protobufSource :+ protobufInc
 
 lazy val ds3ar = crossProject.in(file("."))
   .settings(
-    organization := "com.github.tzbob",
+    organization := "be.tzbob",
     name := "ds3ar",
     autoCompilerPlugins := true,
 
     resolvers += Resolver.sonatypeRepo("releases"),
     resolvers += Resolver.sonatypeRepo("snapshots"),
+    resolvers += Resolver.bintrayRepo("stacycurl", "repo"),
 
     scalacOptions ++= Seq(
       "-encoding", "UTF-8",
@@ -41,12 +42,14 @@ lazy val ds3ar = crossProject.in(file("."))
 
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats" % "0.5.0",
+      "com.lihaoyi" %%% "scalatags" % "0.5.5",
       "org.scalatest" %%% "scalatest" % "3.0.0-M10" % "test"
     )
   )
   .jvmSettings(protobufSettings: _*)
   .jvmSettings(
     libraryDependencies ++= Seq(
+      "com.github.stacycurl" %% "delta-generic" % "1.0.18",
       "com.nrinaudo" %% "kantan.csv-generic" % "0.1.10"
     )
   )
@@ -54,11 +57,15 @@ lazy val ds3ar = crossProject.in(file("."))
   .jsSettings(
     libraryDependencies ++= Seq(
       "com.trueaccord.scalapb" %%% "scalapb-runtime" % "0.5.16",
-      "com.trueaccord.scalapb" %%% "scalapb-runtime" % "0.5.16" % PB.protobufConfig,
-      "com.lihaoyi" %%% "scalatags" % "0.5.5"
+      "com.trueaccord.scalapb" %%% "scalapb-runtime" % "0.5.16" % PB.protobufConfig
     )
   )
 
 // Needed, so sbt finds the projects
 lazy val ds3arJVM = ds3ar.jvm
-lazy val ds3arJS = ds3ar.js
+lazy val ds3arJS = ds3ar.js.settings(
+  artifactPath in Compile in fastOptJS :=
+    file("jvm/src/main/resources/main-fastopt.js"),
+  artifactPath in Compile in fullOptJS :=
+    file("jvm/src/main/resources/main-fullopt.js")
+)
