@@ -6,7 +6,9 @@ case class EffectFields[T](
   bleed: T,
   poison: T,
   frost: T
-)
+) {
+  val all = List(bleed, poison, frost)
+}
 
 object EffectFields {
   implicit val effectFieldsApply: Apply[EffectFields] =

@@ -11,6 +11,8 @@ case class WeaponDamageFields[T](
 ) {
   def sum(implicit ev: Numeric[T]) =
     List(physical, magic, fire, lightning, dark).sum
+
+  val all = List(physical, magic, fire, lightning, dark)
 }
 
 object WeaponDamageFields {

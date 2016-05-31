@@ -32,6 +32,8 @@ case class EquipParamWeapon(
   private val ccgManager: DataManager[Int, CalcCorrectGraph],
   private val sepManager: DataManager[Int, SpEffectParam]
 ) {
+  val name: Error Xor String = Names(rep.id)
+
   private def coefficients: OffensiveLevelFields[Float] =
     OffensiveLevelFields(
       rep.correctStrength,
@@ -206,7 +208,7 @@ case class EquipParamWeapon(
     }
 
     statCoefficient.map(_.map { x =>
-      1 + x.sumOffensive
+      1 + x.sum
     })
   }
 

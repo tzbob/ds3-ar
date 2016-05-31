@@ -3,6 +3,7 @@ package ds3ar.ir
 import cats.data.Xor
 
 import kantan.csv.generic._
+import cats.std.all._
 import cats.syntax.all._
 
 import org.scalatest.FunSuite
@@ -31,12 +32,13 @@ class EquipParamWeaponTest extends FunSuite {
 
   def testSheet(fileName: String, levels: OffensiveLevelFields[Int], upgradeLevel: Int) = {
     val wo = ParamReader.read[WeaponOverview]("/v1.6" + fileName)
+
     val epwmFuture = FileResourceDataManager
       .equipParamWeaponManagerFor("v1.6")
 
     wo.foreach { overview =>
       val epwFuture = epwmFuture.map(_.find(overview.id))
-      val epw = Await.result(epwFuture, 1 second).toOption.get
+      val epw = Await.result(epwFuture, 1.second).toOption.get
 
       val epwAR = epw.reinforcedAR(levels, upgradeLevel)
 
