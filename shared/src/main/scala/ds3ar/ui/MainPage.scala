@@ -1,6 +1,7 @@
 package ds3ar.ui
 
 import ds3ar.ir._
+import ds3ar.model.OptimalClass
 import scalatags.generic._
 import shapeless.tag.@@
 
@@ -12,6 +13,7 @@ class MainPage[Builder, Output <: FragT, FragT](
   val async = "async".emptyAttr
   val defer = "defer".emptyAttr
   val helper = new TagsHelper(bundle)
+  val template = new Template(bundle)
 
   val myHead = Html { _ =>
     head(
@@ -46,6 +48,13 @@ class MainPage[Builder, Output <: FragT, FragT](
     Html(id => helper.input(id, "Fth")),
     Html(id => helper.input(id, "Lck"))
   )
+
+  val myClassResults = Html { id0 =>
+    div(
+      id := id0,
+      template.optimalClasses(OptimalClass.defaults)
+    )
+  }
 
   val myCompute = Html { id =>
     helper.cardButton(id, "Compute Attack Rating Table")
@@ -93,6 +102,8 @@ class MainPage[Builder, Output <: FragT, FragT](
               div(myLevelInput.all.map(_.html))
             ),
 
+            myClassResults.html,
+
             div(
               cls := "mdl-card__actions mdl-card--border",
 
@@ -136,9 +147,11 @@ class MainPage[Builder, Output <: FragT, FragT](
           )
         ),
 
-        script(async, defer, src := "material.min.js"),
-        script(async, defer, src := "getmdl-select.min.js"),
-        script(async, defer, src := "jvm/src/main/resources/main-fastopt.js")
+        script(async, src := "material.min.js"),
+        script(async, src := "getmdl-select.min.js"),
+        script(src := "main-fastopt.js"),
+        script("ds3ar.ui.Main().main()")
+
       )
     )
 

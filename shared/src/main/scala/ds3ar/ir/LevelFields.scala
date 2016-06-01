@@ -2,8 +2,6 @@ package ds3ar.ir
 
 import cats._
 
-// extends OffensiveLevelFields[T]
-
 case class LevelFields[T](
   vigor: T,
   attunement: T,
@@ -40,6 +38,18 @@ case class LevelFields[T](
 }
 
 object LevelFields {
+  val fieldAbbrevs = LevelFields(
+    "Vig",
+    "Att",
+    "End",
+    "Vit",
+    "Str",
+    "Dex",
+    "Int",
+    "Fth",
+    "Lck"
+  )
+
   implicit val levelFieldsApply: Apply[LevelFields] =
     new Apply[LevelFields] {
       def map[A, B](fa: LevelFields[A])(f: A => B): LevelFields[B] =

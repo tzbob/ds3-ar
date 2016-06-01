@@ -43,6 +43,8 @@ lazy val ds3ar = crossProject.in(file("."))
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats" % "0.5.0",
       "com.lihaoyi" %%% "scalatags" % "0.5.5",
+      "com.chuusai" %% "shapeless" % "2.3.1",
+      "be.tzbob" %%% "hokko" % "0.2.0-SNAPSHOT",
       "org.scalatest" %%% "scalatest" % "3.0.0-M10" % "test"
     )
   )
@@ -65,7 +67,7 @@ lazy val ds3ar = crossProject.in(file("."))
 lazy val ds3arJVM = ds3ar.jvm
 lazy val ds3arJS = ds3ar.js.settings(
   artifactPath in Compile in fastOptJS :=
-    file("jvm/src/main/resources/main-fastopt.js"),
+    file("./main-fastopt.js"),
   artifactPath in Compile in fullOptJS :=
-    file("jvm/src/main/resources/main-fullopt.js")
+    file("./main-fullopt.js")
 )

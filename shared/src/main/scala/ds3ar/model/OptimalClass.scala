@@ -4,6 +4,10 @@ import ds3ar.ir._
 import cats.syntax.all._
 
 object OptimalClass {
+  val defaults = StartingClass.all.map { sc =>
+    Result(sc, sc.level, sc.levels)
+  }
+
   case class Result(
     startingClass: StartingClass,
     soulLevel: Int,

@@ -63,7 +63,7 @@ class TagsHelper[Builder, Output <: FragT, FragT](
     contentRows0: List[Frag]
   ) =
     tag.table(
-      cls := "mdl-cell mdl-cell--12-col mdl-shadow--2dp",
+      cls := "mdl-cell mdl-cell--12-col",
       thead(headerRows0),
       tbody(contentRows0)
     )

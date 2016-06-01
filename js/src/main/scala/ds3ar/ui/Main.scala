@@ -15,6 +15,8 @@ import ds3ar.ui._
 
 object Main extends JSApp {
   val mainPage = new MainPage(scalatags.JsDom)
+  val template = mainPage.template
+
   val epwCurrent = AjaxResourceDataManager.equipParamWeaponManagerFor("v1.6")
   val levelInputs = mainPage.myLevelInput.map(Selector.byHtml)
 
@@ -23,14 +25,19 @@ object Main extends JSApp {
     val levelValuesInt = levelValuesRaw.map { lvl =>
       Try(lvl.toInt).toOption
     }
+    val optimalClass = OptimalClass.compute(levelValuesInt)
 
-    println(levelValuesInt)
+    val table = template.optimalClasses(optimalClass).render
+    val target = Selector.byHtml(mainPage.myClassResults)
 
-    println(OptimalClass.compute(levelValuesInt))
+    println(target)
+    println(target.firstChild)
+
+    target.replaceChild(table, target.firstChild)
   }
 
   def main(): Unit = {
-    levelInputs.map(_.addEventListener("click", calculateOptimalClass _))
+    levelInputs.map(_.addEventListener("input", calculateOptimalClass _))
     println("Main has been executed")
     // AjaxResourceDataManager.equipParamWeaponManagerFor("v1.6").foreach { manager =>
     //   manager.all.foreach { epw =>
