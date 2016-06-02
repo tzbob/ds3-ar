@@ -3,7 +3,6 @@ package ds3ar.ui
 import ds3ar.ir._
 import ds3ar.model.OptimalClass
 import scalatags.generic._
-import shapeless.tag.@@
 
 class MainPage[Builder, Output <: FragT, FragT](
   val bundle: Bundle[Builder, Output, FragT]
@@ -23,10 +22,14 @@ class MainPage[Builder, Output <: FragT, FragT](
       bundle.tags2.title("Dark Souls III Attack Calculator"),
       link(rel := "shortcut icon", href := "images/favicon.png"),
       link(rel := "stylesheet", href := "https://fonts.googleapis.com/icon?family=Material+Icons"),
-      link(rel := "stylesheet", href := "getmdl-select.min.css"),
+      link(rel := "stylesheet", href := "https://fonts.googleapis.com/css?family=Roboto+Condensed"),
       link(rel := "stylesheet", href := "material.min.css"),
       link(rel := "stylesheet", href := "styles.css")
     )
+  }
+
+  val myProgress = Html { id0 =>
+    div(id := id0, cls := "mdl-progress mdl-js-progress")
   }
 
   val myHeader = Html { _ =>
@@ -48,6 +51,24 @@ class MainPage[Builder, Output <: FragT, FragT](
     Html(id => helper.input(id, "Fth")),
     Html(id => helper.input(id, "Lck"))
   )
+
+  val myUpgradeLevelText = Html(id0 => span(id := id0))
+
+  val myUpgradeLevel = Html { id0 =>
+    div(
+      cls := "slider-label",
+      span("Weapon Upgrade Level: "),
+      myUpgradeLevelText.html,
+      input(
+        cls := "mdl-slider mdl-js-slider",
+        tpe := "range",
+        id := id0,
+        value := 10,
+        min := "0",
+        max := "10"
+      )
+    )
+  }
 
   val myClassResults = Html { id0 =>
     div(
@@ -78,6 +99,30 @@ class MainPage[Builder, Output <: FragT, FragT](
     Html(id0 => th(id := id0, "Frost"))
   )
 
+  val myWeaponTableBody = Html { id0 =>
+    table(
+      id := id0,
+      cls := "mdl-cell mdl-cell--12-col",
+      thead(
+        tr(
+          th(),
+          th(colspan := 6, "Attack Rating"),
+          th(colspan := 3, "Effects")
+        ),
+        tr(
+          th(cls := "mdl-data-table__cell--non-numeric", "Weapon") ::
+            myWeaponDamageHeaders.all.map(_.html) :::
+            myWeaponDamageTotalHeader.html ::
+            myEffectHeaders.all.map(_.html)
+        )
+      ),
+      tbody(
+        id := "contentArea",
+        cls := "clusterize-content"
+      )
+    )
+  }
+
   val page =
     html(
       lang := "en",
@@ -91,15 +136,18 @@ class MainPage[Builder, Output <: FragT, FragT](
 
         div(
           cls := "mdl-layout__content mdl-grid",
-
           div(
             cls := "input-card mdl-cell mdl-shadow--2dp mdl-cell--12-col mdl-card",
-            div(id := "progress", cls := "mdl-progress mdl-js-progress"),
+            myProgress.html,
             div(cls := "mdl-card__title mdl-card--expand"),
 
             form(
               id := "stats", action := "#",
-              div(myLevelInput.all.map(_.html))
+              div(
+                cls := "level-inputs",
+                myLevelInput.all.map(_.html)
+              ),
+              myUpgradeLevel.html
             ),
 
             myClassResults.html,
@@ -113,42 +161,15 @@ class MainPage[Builder, Output <: FragT, FragT](
             )
           ),
 
-          table(
-            cls := "mdl-cell mdl-cell--12-col mdl-shadow--2dp sortable-theme-bootstrap",
-            thead(
-              tr(
-                th(),
-                th(colspan := 6, "Attack Rating"),
-                th(colspan := 3, "Effects")
-              ),
-              tr(
-                th(cls := "mdl-data-table__cell--non-numeric", "Weapon") ::
-                  myWeaponDamageHeaders.all.map(_.html) :::
-                  myWeaponDamageTotalHeader.html ::
-                  myEffectHeaders.all.map(_.html)
-              )
-            ),
-            tbody( // Names.map.toList.sortBy(_._1).map {
-            //   case (id, name) =>
-            //     tr(
-            //       td(cls := "mdl-data-table__cell--non-numeric", name),
-            //       td(id),
-            //       td(id),
-            //       td(id),
-            //       td(id),
-            //       td(id),
-            //       td(id),
-            //       td(id),
-            //       td(id),
-            //       td(id)
-            //     )
-            // }
-            )
+          div(
+            cls := "input-card mdl-cell mdl-shadow--2dp mdl-cell--12-col mdl-card",
+            myWeaponTableBody.html
           )
         ),
 
         script(async, src := "material.min.js"),
         script(async, src := "getmdl-select.min.js"),
+        script(src := "clusterize.min.js"),
         script(src := "main-fastopt.js"),
         script("ds3ar.ui.Main().main()")
 

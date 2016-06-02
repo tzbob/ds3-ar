@@ -12,21 +12,21 @@ object CalcCorrectGraph {
 }
 
 case class CalcCorrectGraph(private val rep: ds3ext.CalcCorrectGraph) extends AnyVal {
-  def apply(stat: Float): Float = {
-    require(stat > 0 && stat <= 99)
+  def apply(stat: Float): Float =
+    if (stat == 0) 0
+    else {
+      val (xA, xB, yA, yB, p) =
+        if (stat < rep.stageMaxVal1)
+          (rep.stageMaxVal0, rep.stageMaxVal1, rep.stageMaxGrowVal0, rep.stageMaxGrowVal1, rep.adjPtMaxGrowVal0)
+        else if (stat < rep.stageMaxVal2)
+          (rep.stageMaxVal1, rep.stageMaxVal2, rep.stageMaxGrowVal1, rep.stageMaxGrowVal2, rep.adjPtMaxGrowVal1)
+        else if (stat < rep.stageMaxVal3)
+          (rep.stageMaxVal2, rep.stageMaxVal3, rep.stageMaxGrowVal2, rep.stageMaxGrowVal3, rep.adjPtMaxGrowVal2)
+        else
+          (rep.stageMaxVal3, rep.stageMaxVal4, rep.stageMaxGrowVal3, rep.stageMaxGrowVal4, rep.adjPtMaxGrowVal3)
 
-    val (xA, xB, yA, yB, p) =
-      if (stat < rep.stageMaxVal1)
-        (rep.stageMaxVal0, rep.stageMaxVal1, rep.stageMaxGrowVal0, rep.stageMaxGrowVal1, rep.adjPtMaxGrowVal0)
-      else if (stat < rep.stageMaxVal2)
-        (rep.stageMaxVal1, rep.stageMaxVal2, rep.stageMaxGrowVal1, rep.stageMaxGrowVal2, rep.adjPtMaxGrowVal1)
-      else if (stat < rep.stageMaxVal3)
-        (rep.stageMaxVal2, rep.stageMaxVal3, rep.stageMaxGrowVal2, rep.stageMaxGrowVal3, rep.adjPtMaxGrowVal2)
-      else
-        (rep.stageMaxVal3, rep.stageMaxVal4, rep.stageMaxGrowVal3, rep.stageMaxGrowVal4, rep.adjPtMaxGrowVal3)
-
-    statFunCore(stat, xA, xB, yA, yB, p) / 100
-  }
+      statFunCore(stat, xA, xB, yA, yB, p) / 100
+    }
 
   private def statFunCore(
     stat: Float,

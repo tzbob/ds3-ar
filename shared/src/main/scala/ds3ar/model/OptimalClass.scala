@@ -14,9 +14,7 @@ object OptimalClass {
     levels: LevelFields[Int]
   )
 
-  def compute(levels: LevelFields[Option[Int]]): List[Result] = {
-    val levels0 = levels.map(_ getOrElse 0)
-
+  def compute(levels0: LevelFields[Int]): List[Result] = {
     val soulLevelToClass = StartingClass.all.map { clazz =>
       val diff = levels0.map2(clazz.levels)(_ - _)
       val diffPositive = diff.map(Math.max(_, 0))

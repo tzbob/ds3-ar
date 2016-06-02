@@ -16,7 +16,7 @@ class Template[Builder, Output <: FragT, FragT](
     val headerRows = tr(headerContent.map(c => th(c)))
 
     def row(r: OptimalClass.Result) = {
-      val tds = r.startingClass.name ::
+      val tds = r.startingClass.name.capitalize ::
         r.soulLevel.toString ::
         r.levels.all.map(_.toString)
       tr(tds.map(c => td(c)))
@@ -24,5 +24,17 @@ class Template[Builder, Output <: FragT, FragT](
 
     val contentRows = results.map(row)
     helper.table(List(headerRows), contentRows)
+  }
+
+  def weaponsToRows(wps: Seq[Weapon]): Frag = {
+    def row(wp: Weapon) = {
+      val fields = wp.name ::
+        wp.ar.all.map(_.floor.toString) :::
+        wp.ar.sum.floor.toString ::
+        wp.effects.all.map(_.floor.toString)
+      tr(fields.map(v => td(v)))
+    }
+
+    tbody(wps.map(row))
   }
 }
