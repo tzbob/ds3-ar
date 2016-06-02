@@ -21,6 +21,8 @@ lazy val ds3ar = crossProject.in(file("."))
     name := "ds3ar",
     autoCompilerPlugins := true,
 
+    scalaJSOutputWrapper := ("", "ds3ar.ui.Main().main();"),
+
     resolvers += Resolver.sonatypeRepo("releases"),
     resolvers += Resolver.sonatypeRepo("snapshots"),
     resolvers += Resolver.bintrayRepo("stacycurl", "repo"),

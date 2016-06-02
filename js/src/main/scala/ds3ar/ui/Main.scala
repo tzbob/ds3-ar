@@ -48,12 +48,25 @@ object Main extends JSApp {
     else lvls
   }
 
+  val classResults = Selector.byHtml(mainPage.myClassResults)
+
+  def show(): Boolean =
+    Selector.byHtml(mainPage.myShowAll).asInstanceOf[dom.html.Input].checked
+
+  def reflectShowClasses() =
+    if (show()) {
+      classResults.classList.remove("hide-all-but-first")
+      classResults.classList.add("show-all")
+    } else {
+      classResults.classList.remove("show-all")
+      classResults.classList.add("hide-all-but-first")
+    }
+
   def calculateOptimalClass() = {
     val optimalClass = OptimalClass.compute(getCurrentLevels())
     val table = template.optimalClasses(optimalClass).render
-    val target = Selector.byHtml(mainPage.myClassResults)
 
-    target.replaceChild(table, target.firstChild)
+    classResults.replaceChild(table, classResults.firstChild)
   }
 
   def calculateWeaponTable() = {
@@ -92,6 +105,9 @@ object Main extends JSApp {
     val computeButton = Selector.byHtml(mainPage.myCompute)
     computeButton.addEventListener("click", (_: Any) => calculateWeaponTable())
     calculateWeaponTable()
+
+    val showButton = Selector.byHtml(mainPage.myShowAll)
+    showButton.addEventListener("click", (_: Any) => reflectShowClasses())
 
     println("Main has been executed")
   }

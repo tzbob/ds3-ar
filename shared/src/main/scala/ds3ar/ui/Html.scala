@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 case class Html[Frag](mk: Html.Id => Frag) {
   val id = Html.newId()
-  val html = mk(id)
+  lazy val html = mk(id)
 }
 
 object Html {

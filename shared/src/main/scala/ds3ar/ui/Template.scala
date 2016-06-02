@@ -23,7 +23,12 @@ class Template[Builder, Output <: FragT, FragT](
     }
 
     val contentRows = results.map(row)
-    helper.table(List(headerRows), contentRows)
+
+    table(
+      cls := "hide-all-but-first mdl-cell mdl-cell--12-col",
+      thead(headerRows),
+      tbody(contentRows)
+    )
   }
 
   def weaponsToRows(wps: Seq[Weapon]): Frag = {

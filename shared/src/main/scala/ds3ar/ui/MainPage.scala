@@ -52,7 +52,7 @@ class MainPage[Builder, Output <: FragT, FragT](
     Html(id => helper.input(id, "Lck"))
   )
 
-  val myUpgradeLevelText = Html(id0 => span(id := id0))
+  val myUpgradeLevelText = Html(id0 => span(id := id0, "5 / 10"))
 
   val myUpgradeLevel = Html { id0 =>
     div(
@@ -79,6 +79,10 @@ class MainPage[Builder, Output <: FragT, FragT](
 
   val myCompute = Html { id =>
     helper.cardButton(id, "Compute Attack Rating Table")
+  }
+
+  val myShowAll = Html { id =>
+    helper.switch(id, "Show all classes")
   }
 
   val my2hSwitch = Html(id => helper.switch(id, "2H"))
@@ -118,12 +122,13 @@ class MainPage[Builder, Output <: FragT, FragT](
       ),
       tbody(
         id := "contentArea",
-        cls := "clusterize-content"
+        cls := "clusterize-content",
+        tr(td("Try and compute the AR table!"))
       )
     )
   }
 
-  val page =
+  lazy val page =
     html(
       lang := "en",
 
@@ -157,6 +162,7 @@ class MainPage[Builder, Output <: FragT, FragT](
 
               myCompute.html,
               helper.spacer,
+              myShowAll.html,
               my2hSwitch.html
             )
           ),
@@ -169,10 +175,7 @@ class MainPage[Builder, Output <: FragT, FragT](
 
         script(async, src := "material.min.js"),
         script(async, src := "getmdl-select.min.js"),
-        script(src := "clusterize.min.js"),
-        script(src := "main-fastopt.js"),
-        script("ds3ar.ui.Main().main()")
-
+        script(defer, src := "main-fastopt.js")
       )
     )
 
