@@ -22,3 +22,7 @@ project/plugins/project/
 
 # IntelliJ
 .idea
+
+src/site/dev-index.html
+src/site/index.html
+src/site/main*
