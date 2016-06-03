@@ -15,11 +15,11 @@ object Main {
   val mainPage = new MainPage(scalatags.Text)
 
   def main(args: Array[String]): Unit = {
-    new PrintWriter("site/index.html") {
+    new PrintWriter("src/site/index.html") {
       print(mainPage.page.render)
       close()
     }
-    new PrintWriter("site/dev-index.html") {
+    new PrintWriter("src/site/dev-index.html") {
       print(mainPage.devPage.render)
       close()
     }

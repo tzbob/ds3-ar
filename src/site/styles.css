@@ -1,0 +1,118 @@
+@font-face {
+    font-family: 'OptimusPrinceps';
+    src: url('./OptimusPrinceps.eot');
+    src: local('OptimusPrinceps'), url('./OptimusPrinceps.woff') format('woff'), url('./OptimusPrinceps.ttf') format('truetype');
+}
+
+html, body {
+    font-family: 'Roboto Condensed', 'Helvetica', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    text-align: center;
+    padding: 30px;
+}
+
+header > h1 {
+    font-family: 'OptimusPrinceps';
+    margin: 0;
+    padding: 0;
+}
+
+header > h3 {
+    font-family: 'OptimusPrinceps';
+    margin: -.3em 0 0 0;
+    padding: 0;
+}
+
+.mdl-grid {
+    max-width: 900px;
+}
+
+#stats {
+    background-color: white;
+    text-align: center;
+    padding: 2em;
+}
+
+.mdl-progress {
+    width: 100%;
+}
+
+.hide-all-but-first tr + tr {
+    display: none;
+}
+
+.show-all tr + tr {
+    display: table-row;
+}
+
+#stats .slider-label {
+    width: 20em;
+    margin: 0 auto;
+    padding-top: 1em;
+}
+
+#stats .mdl-textfield {
+    text-align: right;
+}
+
+#stats .level-inputs .mdl-textfield {
+    width: 3em;
+}
+
+#stats .mdl-textfield + .mdl-textfield {
+    margin-left: 3em;
+}
+
+.mdl-switch {
+    width: auto;
+}
+
+.input-card .mdl-card__actions {
+  display: flex;
+  box-sizing:border-box;
+  align-items: center;
+}
+
+.input-card .mdl-switch {
+    padding-right: 3em;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+table {
+    font-size: .5em;
+    background-color: white;
+    border-collapse: collapse;
+}
+
+td, th {
+    margin: 0px;
+    padding: 1em;
+}
+
+td + td,
+th + th {
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+tr + tr {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+thead {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.mdl-card {
+    overflow: visible;
+}
+
+.clusterize-scroll{
+    max-height: 500px;
+}

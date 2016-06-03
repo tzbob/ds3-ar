@@ -1,15 +1,19 @@
 import com.trueaccord.scalapb.{ScalaPbPlugin => PB}
+import com.typesafe.sbt.SbtSite.SiteKeys._
+import com.typesafe.sbt.SbtGhPages.GhPagesKeys._
 
 scalaVersion in ThisBuild := "2.11.8"
 
 lazy val cross = project.in(file(".")).
   aggregate(ds3arJS, ds3arJVM)
-  .settings(site.settings: _*)
-  .settings(ghpages.settings: _*)
+  .settings(site.settings)
+  .settings(ghpages.settings)
   .settings(
+    addCommandAlias("ssite", "; ds3arJVM/run ; fastOptJS"),
     publish := {},
     publishLocal := {},
-    git.remoteRepo := "git@github.com:Tzbob/Ds3-AR.git"
+    git.remoteRepo := "git@github.com:Tzbob/Ds3-AR.git",
+    includeFilter in makeSite := "*"
   )
 
 lazy val protobufSource = sourceDirectory in PB.protobufConfig := file("shared/src/main/protobuf")
@@ -24,6 +28,7 @@ lazy val ds3ar = crossProject.in(file("."))
     name := "ds3ar",
     autoCompilerPlugins := true,
 
+    unmanagedSourceDirectories in Compile += file("src/site/"),
 
     scalaJSOutputWrapper := ("", "ds3ar.ui.Main().main();"),
 
@@ -73,7 +78,7 @@ lazy val ds3ar = crossProject.in(file("."))
 lazy val ds3arJVM = ds3ar.jvm
 lazy val ds3arJS = ds3ar.js.settings(
   artifactPath in Compile in fastOptJS :=
-    file("site/main-fastopt.js"),
+    file("src/site/main-fastopt.js"),
   artifactPath in Compile in fullOptJS :=
-    file("site/main-fullopt.js")
+    file("src/site/main-fullopt.js")
 )
