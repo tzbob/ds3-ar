@@ -172,7 +172,7 @@ class MainPage[Builder, Output <: FragT, FragT](
 
         script(async, src := "material.min.js"),
         script(async, src := "getmdl-select.min.js"),
-        script(defer, src := mainJs)
+        script(async, src := mainJs)
       )
     )
 

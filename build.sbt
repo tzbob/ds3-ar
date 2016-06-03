@@ -10,9 +10,10 @@ lazy val cross = project.in(file(".")).
   .settings(ghpages.settings)
   .settings(
     addCommandAlias("ssite", "; ds3arJVM/run ; fastOptJS"),
+    addCommandAlias("ssite-pub", "; ds3arJVM/run ; fullOptJS ; ghpages-push-site"),
     publish := {},
     publishLocal := {},
-    git.remoteRepo := "git@github.com:Tzbob/Ds3-AR.git",
+    git.remoteRepo := "git@github.com:Tzbob/ds3-ar.git",
     includeFilter in makeSite := "*"
   )
 

@@ -8,7 +8,7 @@ import scala.scalajs.js.typedarray._
 
 object AjaxResourceDataManager {
   def equipParamWeaponManagerFor(version: String) = {
-    val base = s""
+    val base = s"."
     ResourceDataManager.equipParamWeaponManagerFor(streamer, base, version)
   }
 
