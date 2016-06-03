@@ -14,20 +14,6 @@ class MainPage[Builder, Output <: FragT, FragT](
   val helper = new TagsHelper(bundle)
   val template = new Template(bundle)
 
-  val myHead = Html { _ =>
-    head(
-      meta(charset := "utf-8"),
-      meta(name := "description", content := "A front-end template that helps you build fast, modern mobile web apps."),
-      meta(name := "viewport", content := "width=device-width, initial-scale=1.0, minimum-scale=1.0"),
-      bundle.tags2.title("Dark Souls III Attack Calculator"),
-      link(rel := "shortcut icon", href := "images/favicon.png"),
-      link(rel := "stylesheet", href := "https://fonts.googleapis.com/icon?family=Material+Icons"),
-      link(rel := "stylesheet", href := "https://fonts.googleapis.com/css?family=Roboto+Condensed"),
-      link(rel := "stylesheet", href := "material.min.css"),
-      link(rel := "stylesheet", href := "styles.css")
-    )
-  }
-
   val myProgress = Html { id0 =>
     div(id := id0, cls := "mdl-progress mdl-js-progress")
   }
@@ -123,16 +109,27 @@ class MainPage[Builder, Output <: FragT, FragT](
       tbody(
         id := "contentArea",
         cls := "clusterize-content",
-        tr(td("Try and compute the AR table!"))
+        tr(td("Computing AR..."))
       )
     )
   }
 
-  lazy val page =
+  def makePage(mainJs: String) = {
+
     html(
       lang := "en",
 
-      myHead.html,
+      head(
+        meta(charset := "utf-8"),
+        meta(name := "description", content := "A front-end template that helps you build fast, modern mobile web apps."),
+        meta(name := "viewport", content := "width=device-width, initial-scale=1.0, minimum-scale=1.0"),
+        bundle.tags2.title("Dark Souls III Attack Calculator"),
+        link(rel := "shortcut icon", href := "images/favicon.png"),
+        link(rel := "stylesheet", href := "https://fonts.googleapis.com/icon?family=Material+Icons"),
+        link(rel := "stylesheet", href := "https://fonts.googleapis.com/css?family=Roboto+Condensed"),
+        link(rel := "stylesheet", href := "material.min.css"),
+        link(rel := "stylesheet", href := "styles.css")
+      ),
 
       body(
         cls := "mdl-demo mdl-color--grey-100 mdl-color-text--grey-700 mdl-base",
@@ -175,8 +172,13 @@ class MainPage[Builder, Output <: FragT, FragT](
 
         script(async, src := "material.min.js"),
         script(async, src := "getmdl-select.min.js"),
-        script(defer, src := "main-fastopt.js")
+        script(defer, src := mainJs)
       )
     )
+
+  }
+
+  lazy val devPage = makePage("main-fastopt.js")
+  lazy val page = makePage("main-fullopt.js")
 
 }

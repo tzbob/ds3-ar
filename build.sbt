@@ -3,10 +3,13 @@ import com.trueaccord.scalapb.{ScalaPbPlugin => PB}
 scalaVersion in ThisBuild := "2.11.8"
 
 lazy val cross = project.in(file(".")).
-  aggregate(ds3arJS, ds3arJVM).
-  settings(
+  aggregate(ds3arJS, ds3arJVM)
+  .settings(site.settings: _*)
+  .settings(ghpages.settings: _*)
+  .settings(
     publish := {},
-    publishLocal := {}
+    publishLocal := {},
+    git.remoteRepo := "git@github.com:Tzbob/Ds3-AR.git"
   )
 
 lazy val protobufSource = sourceDirectory in PB.protobufConfig := file("shared/src/main/protobuf")
@@ -20,6 +23,7 @@ lazy val ds3ar = crossProject.in(file("."))
     organization := "be.tzbob",
     name := "ds3ar",
     autoCompilerPlugins := true,
+
 
     scalaJSOutputWrapper := ("", "ds3ar.ui.Main().main();"),
 
@@ -69,7 +73,7 @@ lazy val ds3ar = crossProject.in(file("."))
 lazy val ds3arJVM = ds3ar.jvm
 lazy val ds3arJS = ds3ar.js.settings(
   artifactPath in Compile in fastOptJS :=
-    file("./main-fastopt.js"),
+    file("site/main-fastopt.js"),
   artifactPath in Compile in fullOptJS :=
-    file("./main-fullopt.js")
+    file("site/main-fullopt.js")
 )
