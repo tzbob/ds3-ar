@@ -4712,7 +4712,7 @@ $c_Lds3ar_ui_AjaxResourceDataManager$.prototype.init___ = (function() {
   return this
 });
 $c_Lds3ar_ui_AjaxResourceDataManager$.prototype.equipParamWeaponManagerFor__T__s_concurrent_Future = (function(version) {
-  var base = new $c_s_StringContext().init___sc_Seq(new $c_sjs_js_WrappedArray().init___sjs_js_Array([""])).s__sc_Seq__T($m_sci_Nil$());
+  var base = new $c_s_StringContext().init___sc_Seq(new $c_sjs_js_WrappedArray().init___sjs_js_Array(["."])).s__sc_Seq__T($m_sci_Nil$());
   return $m_Lds3ar_ir_ResourceDataManager$().equipParamWeaponManagerFor__F1__T__T__s_concurrent_Future(this.streamer$1, base, version)
 });
 var $d_Lds3ar_ui_AjaxResourceDataManager$ = new $TypeData().initClass({
