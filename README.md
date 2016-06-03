@@ -7,3 +7,7 @@ This project is a continuation of all the amazing work done by [Pireax](https://
 In its current state ```ds3ar.ir``` is a direct port of the Sheets calculator.
 
 Stay tuned for more!
+
+# License
+
+See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
